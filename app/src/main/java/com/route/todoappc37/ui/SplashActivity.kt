@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.route.todoappc37.R
+import com.route.todoappc37.ui.database.MyDataBase
 import com.route.todoappc37.ui.home.HomeActivity
 
 class SplashActivity : AppCompatActivity() {

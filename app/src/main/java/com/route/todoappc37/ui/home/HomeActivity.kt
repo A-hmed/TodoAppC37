@@ -1,6 +1,7 @@
 package com.route.todoappc37.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,8 @@ import com.route.todoappc37.ui.home.fragments.SettingsFragment
 class HomeActivity : AppCompatActivity() {
     lateinit var bottomNav: BottomNavigationView
     lateinit var fab: FloatingActionButton
+    var listFragment = ListFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -23,13 +26,18 @@ class HomeActivity : AppCompatActivity() {
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             val addBottomSheet = AddBottomSheetFragment()
+            addBottomSheet.onAddClicked = object :AddBottomSheetFragment.OnAddClicked{
+                override fun onClick() {
+                    listFragment.refreshTodos()
+                }
+            }
             addBottomSheet.show(supportFragmentManager, "")
         }
-        pushFragment(ListFragment())
+        pushFragment(listFragment)
         bottomNav.setOnItemSelectedListener(object : NavigationBarView.OnItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 if (item.itemId == R.id.listItem) {
-                    pushFragment(ListFragment())
+                    pushFragment(listFragment)
                 } else {
                     pushFragment(SettingsFragment())
                 }

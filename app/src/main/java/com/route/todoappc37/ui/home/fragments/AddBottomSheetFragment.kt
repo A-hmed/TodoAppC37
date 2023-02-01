@@ -14,14 +14,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.route.todoappc37.R
+import com.route.todoappc37.ui.database.MyDataBase
+import com.route.todoappc37.ui.database.model.Todo
 import java.util.*
 
 class AddBottomSheetFragment: BottomSheetDialogFragment() {
     lateinit var selectDateTv:TextView
-    var selectedDate: Calendar= Calendar.getInstance()
+    var selectedDate: Calendar = Calendar.getInstance()
     lateinit var titleTextInput: TextInputLayout
     lateinit  var descriptionTextInput: TextInputLayout
     lateinit var addTodoButton: Button
+    var onAddClicked: OnAddClicked? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,7 +32,6 @@ class AddBottomSheetFragment: BottomSheetDialogFragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_add_todo, container,false)
     }
-
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,9 +60,23 @@ class AddBottomSheetFragment: BottomSheetDialogFragment() {
 
         addTodoButton.setOnClickListener {
               if(! validate()) return@setOnClickListener
-            //todo: we should add todo to database
+            selectedDate.clear(Calendar.HOUR)
+            selectedDate.clear(Calendar.MINUTE)
+            selectedDate.clear(Calendar.SECOND)
+            selectedDate.clear(Calendar.MILLISECOND)
+
+            val todo = Todo(title = titleTextInput.editText!!.text.toString(),
+            description = descriptionTextInput.editText!!.text.toString(),
+             isDone = false,  date = selectedDate.time.time)
+             MyDataBase.getInstance(requireContext()).getTodoDao().addTodo(todo)
+             onAddClicked?.onClick()
+             dismiss()
         }
 
+    }
+
+    interface OnAddClicked{
+        fun onClick()
     }
     fun validate(): Boolean{
         var isValid = true
@@ -81,6 +97,5 @@ class AddBottomSheetFragment: BottomSheetDialogFragment() {
     }
     fun updateDateTextView(){
         selectDateTv.text = "${selectedDate.get(Calendar.DAY_OF_MONTH)}/ ${selectedDate.get(Calendar.MONTH)+1} / ${selectedDate.get(Calendar.YEAR)}"
-
     }
 }
